@@ -48,6 +48,7 @@ class Getter(object):
 
 class JeevesFunction(object):
     def __init__(self, func, kwargs, cur_jeeves):
+        self.core_kwargs = kwargs
         self.process_signature(func)
 
         kwargs = Getter(kwargs, cur_jeeves.kwargs)
@@ -117,6 +118,9 @@ class JeevesFunction(object):
     def to_requires(self):
         return self.requires
 
+    def __str__(self):
+        return "'{}' ({})".format(self.kwargs['name'], ",".join("{}:{}".format(k,v) for k, v in self.core_kwargs.new.items()))
+
 
 class Jeeves(object):
     def __init__(self, **kwargs):
@@ -159,6 +163,9 @@ class Jeeves(object):
         )
 
     def save_files(self, server_fname=None, client_fname=None):
+        print(str(self))
+        print("\n".join(str(f) for f in self.funcs))
+
         server_fname = server_fname if server_fname is not None else self.kwargs('name') + "_server.py"
         client_fname = client_fname if client_fname is not None else self.kwargs('name') + "_client.py"
         open(server_fname, 'w').write(self.to_server_code())
@@ -169,6 +176,9 @@ class Jeeves(object):
 
     def call(self, func, *args, **kwargs):
         pass
+
+    def __str__(self):
+        return "Jeeves '{}' ({})".format(self.kwargs['name'], ", ".join("{}:{}".format(k,v.strip()) for k, v in self.kwargs.new.items()))
 
 
 def get_jeeves_args(obj):
